@@ -5,21 +5,21 @@ BEGIN;
 
 CREATE TABLE public.email_verifications
 (
+    system_activation_proccess_id integer NOT NULL,
+    email_acitivation_code text NOT NULL,
     id integer NOT NULL,
-    is_activation boolean NOT NULL,
-    email_acitivation_code text NOT NULL
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE public.employers
 (
-    id integer NOT NULL,
-    is_activation boolean NOT NULL,
-    email_acitivation_code text NOT NULL,
+    user_id integer NOT NULL,
     email character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
     company_name character varying(255) NOT NULL,
     web_site character varying(50) NOT NULL,
-    telephone_number character varying(20) NOT NULL
+    telephone_number character varying(20) NOT NULL,
+    email_verification_id integer NOT NULL
 );
 
 CREATE TABLE public.job_positions
@@ -31,15 +31,12 @@ CREATE TABLE public.job_positions
 
 CREATE TABLE public.job_seekers
 (
-    id integer NOT NULL,
-    is_activation boolean NOT NULL,
-    email_acitivation_code text NOT NULL,
-    email character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
+    user_id integer NOT NULL,
     first_name character varying(50) NOT NULL,
     last_name character varying(50) NOT NULL,
     nationality_number character varying(11) NOT NULL,
-    date_of_birth date
+    date_of_birth date,
+    email_verification_id integer NOT NULL
 );
 
 CREATE TABLE public.system_activation_processes
@@ -51,9 +48,7 @@ CREATE TABLE public.system_activation_processes
 
 CREATE TABLE public.system_staff
 (
-    id integer NOT NULL,
-    email character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
+    user_id integer NOT NULL,
     first_name character varying(50) NOT NULL,
     last_name character varying(50) NOT NULL
 );
@@ -65,4 +60,40 @@ CREATE TABLE public.users
     password character varying(255) NOT NULL,
     PRIMARY KEY (id)
 );
+
+ALTER TABLE public.email_verifications
+    ADD FOREIGN KEY (system_activation_proccess_id)
+    REFERENCES public.system_activation_processes (id)
+    NOT VALID;
+
+
+ALTER TABLE public.employers
+    ADD FOREIGN KEY (email_verification_id)
+    REFERENCES public.email_verifications (id)
+    NOT VALID;
+
+
+ALTER TABLE public.employers
+    ADD FOREIGN KEY (user_id)
+    REFERENCES public.users (id)
+    NOT VALID;
+
+
+ALTER TABLE public.job_seekers
+    ADD FOREIGN KEY (email_verification_id)
+    REFERENCES public.email_verifications (id)
+    NOT VALID;
+
+
+ALTER TABLE public.job_seekers
+    ADD FOREIGN KEY (user_id)
+    REFERENCES public.users (id)
+    NOT VALID;
+
+
+ALTER TABLE public.system_staff
+    ADD FOREIGN KEY (user_id)
+    REFERENCES public.users (id)
+    NOT VALID;
+
 END;
